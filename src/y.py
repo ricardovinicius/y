@@ -1,10 +1,15 @@
 import subprocess
 import sys
 from server.server import Server
+from client.client import Client
 
 def startServer(host, port):
     server = Server(host, port)
-    
+    server.start()
+
+def startClient(host, port):
+    client = Client(host, port)
+    client.start()
 
 def Main():
     
@@ -19,12 +24,12 @@ def Main():
     execType = sys.argv[1]
     
     host = sys.argv[2]
-    port = sys.argv[3]
+    port = int(sys.argv[3])
 
     if (execType == "-s"):
         startServer(host, port)
     elif (execType == "-c"):
-        startServer()
+        startClient(host, port)
     else:
         sys.exit("EXEC_TYPE must be -s for server or -c for client")
     
