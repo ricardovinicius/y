@@ -1,4 +1,5 @@
 import socket
+import json
 
 class Client:
     
@@ -7,8 +8,6 @@ class Client:
         self.PORT = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
-    def sendPost():
-        self
     
     def start(self):
         self._socket.connect((self.HOST, self.PORT))
@@ -16,11 +15,11 @@ class Client:
         while True:
             message = input("What message do u wanna send? ")
             
-            self._socket.send(message.encode('ascii'))
+            self._socket.send(json.dumps({"username": "ricardo"}).encode("ascii"))
             
             data = self._socket.recv(1024)
             
-            print('Received from the server :',str(data.decode('ascii')))
+            print('Received from the server :',json.loads(data.decode("ascii")))
             
             ans = input('\nDo you want to continue(y/n) :')
             if ans == 'y':

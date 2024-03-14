@@ -1,4 +1,5 @@
 import socket
+import json
 
 from _thread import *
 import threading
@@ -41,9 +42,11 @@ class Server:
                 self.threadLock.release()
                 break
             
-            data = data[::-1]
+            data = json.loads(data.decode("ascii"))
+            data["username"] = data["username"].upper()
+            data = json.dumps(data)
             
-            conn.send(data)
+            conn.send(data.encode("ascii"))
         
         conn.close()
         
