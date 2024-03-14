@@ -6,7 +6,10 @@ class Client:
         self.HOST = host
         self.PORT = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+    
+    def sendPost():
+        self
+    
     def start(self):
         self._socket.connect((self.HOST, self.PORT))
         
