@@ -1,11 +1,12 @@
 import model.Post as Post
 import datetime as dt
 import sqlite3
+import Controller
 
 class PostController:
     def __init__(self):
         self.dictActionFunction = {"createPost": self.createPost}
-        self.dbConn = sqlite3.connect("resources/database.db")
+        self.dbConn = sqlite3.connect(":memory:")
         
     
     def postMapping(self, obj):

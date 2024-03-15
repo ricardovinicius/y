@@ -16,10 +16,17 @@ class Post:
         self.username = username
     
     def _initTable():
-        dbConn = sqlite3.connect("resources/database.db")
+        dbConn = sqlite3.connect(":memory:")
         cur = dbConn.cursor()
         
-        cur.execute("CREATE TABLE posts(id, )")
+        try:
+            cur.execute("CREATE TABLE posts(id INTEGER PRIMARY KEY, title, body, likes, date, time, username)")
+        except:
+            print("Post table already exists or cannot create")
+            
+            
+        
+        
         
     
     

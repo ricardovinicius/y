@@ -1,7 +1,18 @@
+import select
 import socket
 import json
+import sys
+
+from client.actions.PostActions import PostActions
+from enum import Enum
+from common.model.Post import Post
+
+class actionMenu(Enum):
+        CREATE_POST = 1
+
 
 class Client:
+
     
     def __init__(self, host, port):
         self.HOST = host
@@ -13,9 +24,24 @@ class Client:
         self._socket.connect((self.HOST, self.PORT))
         
         while True:
-            message = input("What message do u wanna send? ")
+            inputStreams = [sys.stdin, self._socket]
+            readStream, writeStream, errorStream = select.select(inputStreams,[],[])
             
-            self._socket.send(json.dumps({"username": "ricardo"}).encode("ascii"))
+            for stream in inputStreams: 
+                if stream == self._socket: # if is receiving data from server
+                    message = self._socket.recv(2048) 
+                    print(message.decode('ascii')) 
+                else: 
+                    action = sys.stdin.readline()
+                    match int(action):
+                        case 1:
+                            post = Post(None, "kevin", "pedro", 0, None, None, "darlan")
+                            PostActions.sendPostRequest(post, self._socket)
+                            
+                    '''  '''
+                            
+                            
+            ''' self._socket.send(json.dumps({"username": "ricardo"}).encode("ascii"))
             
             data = self._socket.recv(1024)
             
@@ -25,6 +51,6 @@ class Client:
             if ans == 'y':
                 continue
             else:
-                break
+                break '''
             
         self._socket.close()

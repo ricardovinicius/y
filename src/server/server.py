@@ -1,5 +1,6 @@
 import socket
 import json
+from common.model.Post import *
 
 from _thread import *
 import threading
@@ -20,6 +21,8 @@ class Server:
         self._socket.listen(100)
         print(f"Socket is listening for 100 conn")
         
+        self._initAllTables()
+        
         while True:
             conn, addr = self._socket.accept()
             
@@ -35,6 +38,7 @@ class Server:
     def clientThread(self, conn):
         while True:
             data = conn.recv(1024)
+            print(data)
             
             if not data:
                 print('Bye')
@@ -42,11 +46,16 @@ class Server:
                 self.threadLock.release()
                 break
             
-            data = json.loads(data.decode("ascii"))
+            ''' data = json.loads(data.decode("ascii"))
             data["username"] = data["username"].upper()
-            data = json.dumps(data)
+            data = json.dumps(data) '''
             
-            conn.send(data.encode("ascii"))
+            conn.send(data)
         
         conn.close()
+        
+    def _initAllTables(self):
+        Post._initTable()
+        newPost = Post(None, "Guard", "Echo", 0, None, None, "Ricardo")
+        print(newPost.__dict__)
         
