@@ -2,6 +2,7 @@ import select
 import socket
 import json
 import sys
+import threading
 
 from client.actions.PostActions import PostActions
 from enum import Enum
@@ -18,12 +19,39 @@ class Client:
         self.HOST = host
         self.PORT = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
+        
+    def responseHandler(self, _socket):
+        while True:
+            try:
+                mensagem = _socket.recv(1024).decode("utf-8")
+                print("Mensagem recebida:", mensagem)
+            except ConnectionAbortedError:
+                print("Conexão encerrada pelo servidor.")
+                break
+        
+        exit()
+            
+    def requestSender(self, _socket):
+        while True:
+            action = input("Digite uma mensagem para enviar: ")
+            
+            match int(action):
+                case 1:
+                    post = Post(None, "kevin", "pedro", 0, None, None, "darlan")
+                    PostActions.sendPostRequest(post, self._socket) 
+                case 2:
+                    exit()
     
     def start(self):
         self._socket.connect((self.HOST, self.PORT))
         
-        while True:
+        receiveThread = threading.Thread(target=self.responseHandler, args=(self._socket, ))
+        requestThread = threading.Thread(target=self.requestSender, args=(self._socket, ))
+        
+        receiveThread.start()
+        requestThread.start()
+        
+        '''while True:
             inputStreams = [sys.stdin, self._socket]
             readStream, writeStream, errorStream = select.select(inputStreams,[],[])
             
@@ -34,14 +62,12 @@ class Client:
                 else: 
                     action = sys.stdin.readline()
                     match int(action):
-                        case 1:
+                        case actionMenu.CREATE_POST:
                             post = Post(None, "kevin", "pedro", 0, None, None, "darlan")
-                            PostActions.sendPostRequest(post, self._socket)
+                            PostActions.sendPostRequest(post, self._socket) 
+        '''                 
                             
-                    '''  '''
-                            
-                            
-            ''' self._socket.send(json.dumps({"username": "ricardo"}).encode("ascii"))
+        ''' self._socket.send(json.dumps({"username": "ricardo"}).encode("ascii"))
             
             data = self._socket.recv(1024)
             
@@ -52,5 +78,8 @@ class Client:
                 continue
             else:
                 break '''
+                
+        # requestThread.join()
+        # receiveThread.join()
             
         self._socket.close()

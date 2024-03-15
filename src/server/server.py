@@ -13,6 +13,18 @@ class Server:
         self.threadLock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
+    def requestHandle(self, _socket):
+        while True:
+            try:
+                mensagem = _socket.recv(1024).decode("utf-8")
+                print("Mensagem recebida:", mensagem)
+            except ConnectionAbortedError:
+                print("Conexão encerrada pelo servidor.")
+                break
+        
+        exit()
+    # def responseSender(self, _socket):
+        
     
     def start(self):
         self._socket.bind((self.HOST, self.PORT))
@@ -29,28 +41,19 @@ class Server:
             self.threadLock.acquire()
             print('Connected to :', addr[0], ':', addr[1])
             
-            
             start_new_thread(self.clientThread, (conn,))
             
         self._socket.close()
             
     
     def clientThread(self, conn):
-        while True:
-            data = conn.recv(1024)
-            print(data)
-            
-            if not data:
-                print('Bye')
-                
-                self.threadLock.release()
-                break
-            
-            ''' data = json.loads(data.decode("ascii"))
+        requestHandleThread = threading.Thread(target=self.requestHandle, args=(conn, ))
+        
+        ''' data = json.loads(data.decode("ascii"))
             data["username"] = data["username"].upper()
             data = json.dumps(data) '''
             
-            conn.send(data)
+        requestHandleThread.start()
         
         conn.close()
         
